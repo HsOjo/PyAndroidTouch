@@ -1,12 +1,11 @@
 import math as pymath
 
-from pyandroidtouch import PyAndroidTouch
+from pyandroidtouch.base import AndroidTouch
 from pyandroidtouch.utils import math
 
 
-@PyAndroidTouch.action
-def circle(touch: PyAndroidTouch, ox, oy, finger=1, radius=64, time=100, start_degree=0, count: float = 1,
-           reverse=False):
+@AndroidTouch.action
+def circle(touch: AndroidTouch, ox, oy, radius=64, time=100, start_degree=0, count: float = 1, reverse=False, finger=1):
     length = 360
     distance = length * count
     step = distance / time
@@ -40,6 +39,6 @@ def circle(touch: PyAndroidTouch, ox, oy, finger=1, radius=64, time=100, start_d
 
 
 if __name__ == '__main__':
-    pat = PyAndroidTouch(debug=True)
+    pat = AndroidTouch(debug=True)
     circle(pat, 640, 360, finger=1, time=500, count=1)
     circle(pat, 640, 360, finger=2, time=500, count=0.5)

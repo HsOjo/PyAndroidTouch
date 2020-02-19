@@ -1,11 +1,11 @@
 import math as pymath
 
-from pyandroidtouch import PyAndroidTouch
+from pyandroidtouch.base import AndroidTouch
 from pyandroidtouch.utils import math
 
 
-@PyAndroidTouch.action
-def expand(touch: PyAndroidTouch, ox, oy, distance=32, size=128, time=100, degree=0):
+@AndroidTouch.action
+def expand(touch: AndroidTouch, ox, oy, size=128, distance=32, time=100, degree=0):
     step = size / time
     count_step = int(size // step)
     angle = pymath.radians(degree)
@@ -25,6 +25,7 @@ def expand(touch: PyAndroidTouch, ox, oy, distance=32, size=128, time=100, degre
 
 
 if __name__ == '__main__':
-    pat = PyAndroidTouch(debug=True)
+    pat = AndroidTouch(debug=True)
     expand(pat, 640, 360, time=300, degree=-45)
+    expand(pat, 640, 360, distance=256, size=-128, time=300, degree=-45)
     pat.execute()
