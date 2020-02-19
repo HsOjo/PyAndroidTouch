@@ -5,7 +5,8 @@ from pyandroidtouch.utils import math
 
 
 @AndroidTouch.action
-def circle(touch: AndroidTouch, ox, oy, radius=64, time=100, start_degree=0, count: float = 1, reverse=False, finger=1):
+def circle(touch: AndroidTouch, ox, oy, radius=64, time=100, press_time=0, start_degree=0, count: float = 1,
+           reverse=False, finger=1):
     length = 360
     distance = length * count
     step = distance / time
@@ -18,6 +19,7 @@ def circle(touch: AndroidTouch, ox, oy, radius=64, time=100, start_degree=0, cou
         finger_distance = length / finger
         for n in range(finger):
             touch.down(*calc_pos(start_degree), n)
+        touch.delay(press_time)
         for i in range(1, count_step):
             d = i * step
             if reverse:
@@ -29,6 +31,7 @@ def circle(touch: AndroidTouch, ox, oy, radius=64, time=100, start_degree=0, cou
             touch.up(n)
     else:
         touch.down(*calc_pos(start_degree))
+        touch.delay(press_time)
         for i in range(1, count_step):
             d = i * step
             if reverse:
