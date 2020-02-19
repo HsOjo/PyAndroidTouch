@@ -14,15 +14,17 @@ class PyAndroidTouch:
         self._commands = []
         self._pressure = 50
         self._auto_commit = True
+        self._auto_execute = True
         self._debug = debug
         self._pos = {}
 
     def _append(self, command):
-        if command['type'] == 'move':
+        c_type = command['type']
+        if c_type in ['down', 'move']:
             contact = command['contact']
             x, y = command['x'], command['y']
             pos = self._pos.get(contact)
-            if pos is None:
+            if pos is None or c_type == 'down':
                 self._pos[contact] = x, y
             else:
                 px, py = pos
@@ -33,12 +35,12 @@ class PyAndroidTouch:
 
         if len(self._commands) > 0:
             prev = self._commands[-1]
-            if self._auto_commit and command['type'] != 'commit':
-                p_type = prev['type']
-                if p_type not in ['commit', 'delay'] and p_type != command['type']:
+            p_type = prev['type']
+            if self._auto_commit and c_type != 'commit':
+                if p_type not in ['commit', 'delay'] and p_type != c_type:
                     self.commit()
 
-            if prev['type'] == 'delay' and command['type'] == prev['type'] == 'delay':
+            if p_type == 'delay' and c_type == p_type == 'delay':
                 prev['value'] += command['value']
                 return False
 
@@ -57,6 +59,9 @@ class PyAndroidTouch:
 
     def set_auto_commit(self, b: bool):
         self._auto_commit = b
+
+    def set_auto_execute(self, b: bool):
+        self._auto_execute = b
 
     def set_default_pressure(self, value: int):
         self._pressure = value
@@ -100,6 +105,8 @@ class PyAndroidTouch:
             result = func(touch, *args, **kwargs)
             for k, v in protect.items():
                 setattr(touch, k, v)
+            if touch._auto_execute:
+                touch.execute()
             return result
 
         return wraper
