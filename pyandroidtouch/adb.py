@@ -71,4 +71,5 @@ if __name__ == '__main__':
     device = list(adb.devices.values())[0]
     pat = PyAndroidTouchADB(device, debug=True)
     pat.tap(640, 360, finger=2, finger_degree=45)
+    pat.tap(100, 200).wait(500).tap(200, 300).execute()
     pat.destroy()

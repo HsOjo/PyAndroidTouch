@@ -6,13 +6,13 @@ from pyandroidtouch.utils import math
 
 def _action(func):
     # This is _action decorator.
-    def wraper(touch, *args, **kwargs):
-        protect = {k: getattr(touch, k) for k in PyAndroidTouch._protected_fields}
-        result = func(touch, *args, **kwargs)
+    def wraper(self: 'PyAndroidTouch', *args, **kwargs):
+        protect = {k: getattr(self, k) for k in PyAndroidTouch._protected_fields}
+        result = func(self, *args, **kwargs)
         for k, v in protect.items():
-            setattr(touch, k, v)
-        if touch._auto_execute:
-            touch.execute()
+            setattr(self, k, v)
+        if self._auto_execute:
+            self.execute()
         return result
 
     return wraper
@@ -72,6 +72,11 @@ class PyAndroidTouch(AndroidTouch):
         super().execute()
 
     @_action
+    def wait(self, time: int):
+        self.delay(time)
+        return self
+
+    @_action
     def tap(self, x, y, press_time=100, count=1, delay_time=100,
             finger=1, finger_distance=64, finger_degree=0, finger_offset=None):
         angle = pymath.radians(finger_degree)
@@ -92,6 +97,8 @@ class PyAndroidTouch(AndroidTouch):
                 self.down(x, y)
                 self.delay(press_time)
                 self.up()
+
+        return self
 
     @_action
     def swipe(self, sx, sy, ex, ey, press_time=0, time=100,
@@ -138,6 +145,8 @@ class PyAndroidTouch(AndroidTouch):
             self.move(ex, ey)
             self.up()
 
+        return self
+
     @_action
     def circle(self, ox, oy, radius=64, time=100, press_time=0, start_degree=0, count: float = 1,
                reverse=False, finger=1):
@@ -174,6 +183,8 @@ class PyAndroidTouch(AndroidTouch):
                 self.delay()
             self.up()
 
+        return self
+
     @_action
     def expand(self, ox, oy, size=128, distance=32, time=100, degree=0):
         step = size / time
@@ -192,6 +203,8 @@ class PyAndroidTouch(AndroidTouch):
 
         for i in range(2):
             self.up(i)
+
+        return self
 
 
 if __name__ == '__main__':
