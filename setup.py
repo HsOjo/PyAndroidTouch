@@ -23,7 +23,7 @@ def gen_data_files(*dirs):
 
 setuptools.setup(
     name="PyAndroidTouch",
-    version="0.0.2",
+    version="0.1.0",
     author="HsOjo",
     author_email="hsojo@qq.com",
     keywords='hsojo python3 android ojopyadb touch',
