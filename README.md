@@ -10,7 +10,7 @@
 
 # PyAndroidTouch
 
-This project is the python 3 support module based on "[BobbleKeyboard/AndroidTouch](https://github.com/BobbleKeyboard/AndroidTouch)".
+This project is the python 3 support module based on "[BobbleKeyboard/android_touch](https://github.com/BobbleKeyboard/android_touch)".
 
 ## Introduction
 

@@ -10,7 +10,7 @@
 
 # PyAndroidTouch
 
-本项目是基于“[BobbleKeyboard/AndroidTouch](https://github.com/BobbleKeyboard/AndroidTouch)”的 Python3 支持模块。
+本项目是基于“[BobbleKeyboard/android_touch](https://github.com/BobbleKeyboard/android_touch)”的 Python3 支持模块。
 
 ## 功能简介
 
