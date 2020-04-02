@@ -4,21 +4,38 @@ from pyandroidtouch.base import AndroidTouch
 from pyandroidtouch.utils import math
 
 
-def _action(func):
+def _action(type_):
     # This is _action decorator.
-    def wraper(self: 'PyAndroidTouch', *args, **kwargs):
-        protect = {k: getattr(self, k) for k in PyAndroidTouch._protected_fields}
-        result = func(self, *args, **kwargs)
-        for k, v in protect.items():
-            setattr(self, k, v)
-        if self._auto_execute:
-            self.execute()
-        return result
+    def wraper_func(func):
+        def wraper(self: 'PyAndroidTouch', *args, **kwargs):
+            a_type = kwargs.get('_action_type_rewrite', type_)
+            if self._callback_action_begin is not None:
+                self._callback_action_begin(a_type)
 
-    return wraper
+            protect = {k: getattr(self, k) for k in PyAndroidTouch._protected_fields}
+            result = func(self, *args, **kwargs)
+            for k, v in protect.items():
+                setattr(self, k, v)
+            if self._auto_execute:
+                self.execute()
+
+            if self._callback_action_end is not None:
+                self._callback_action_end(a_type)
+            return result
+
+        return wraper
+
+    return wraper_func
 
 
 class PyAndroidTouch(AndroidTouch):
+    ACTION_WAIT = 0
+    ACTION_TAP = 1
+    ACTION_SWIPE = 2
+    ACTION_CIRCLE = 3
+    ACTION_EXPAND = 4
+    ACTION_SHRINK = 5
+
     _protected_fields = [
         '_pressure',
         '_auto_commit',
@@ -29,6 +46,15 @@ class PyAndroidTouch(AndroidTouch):
         self._auto_commit = True
         self._auto_execute = True
         self._pos = {}
+
+        self._callback_action_begin = None
+        self._callback_action_end = None
+
+    def set_callback_action_begin(self, callback):
+        self._callback_action_begin = callback
+
+    def set_callback_action_end(self, callback):
+        self._callback_action_end = callback
 
     def _append(self, command):
         c_type = command['type']
@@ -71,12 +97,12 @@ class PyAndroidTouch(AndroidTouch):
                 self.commit()
         super().execute()
 
-    @_action
+    @_action(ACTION_WAIT)
     def wait(self, time: int):
         self.delay(time)
         return self
 
-    @_action
+    @_action(ACTION_TAP)
     def tap(self, x, y, press_time=100, count=1, delay_time=100,
             finger=1, finger_distance=64, finger_degree=0, finger_offset=None):
         angle = pymath.radians(finger_degree)
@@ -100,7 +126,7 @@ class PyAndroidTouch(AndroidTouch):
 
         return self
 
-    @_action
+    @_action(ACTION_SWIPE)
     def swipe(self, sx, sy, ex, ey, press_time=0, time=100,
               finger=1, finger_distance=64, finger_offset=None):
         distance = math.distance(sx, sy, ex, ey)
@@ -147,7 +173,7 @@ class PyAndroidTouch(AndroidTouch):
 
         return self
 
-    @_action
+    @_action(ACTION_CIRCLE)
     def circle(self, ox, oy, radius=64, time=100, press_time=0, start_degree=0, count: float = 1,
                reverse=False, finger=1):
         length = 360
@@ -185,7 +211,7 @@ class PyAndroidTouch(AndroidTouch):
 
         return self
 
-    @_action
+    @_action(ACTION_EXPAND)
     def expand(self, ox, oy, size=128, distance=32, time=100, degree=0):
         step = size / time
         count_step = int(size // step)
@@ -205,6 +231,9 @@ class PyAndroidTouch(AndroidTouch):
             self.up(i)
 
         return self
+
+    def shrink(self, ox, oy, size=128, distance=32, time=100, degree=0):
+        return self.expand(ox, oy, size, -distance, time, degree, _action_type_rewrite=self.ACTION_SHRINK)
 
 
 if __name__ == '__main__':
